@@ -28,7 +28,7 @@ project_name <br>
 └── README.md              # 項目的說明文件 <br>
 
 ## 程式碼流程說明
-
+![alt text](<Binary Decision Flow-2025-12-12-061125.png>)
 
 ## 貢獻者指引
 * email:timothychang.kj@gmail.com
