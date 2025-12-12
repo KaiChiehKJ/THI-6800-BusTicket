@@ -27,6 +27,9 @@ project_name <br>
 ├── Tableau/ # tableau儀表版納入版控 <br>
 └── README.md              # 項目的說明文件 <br>
 
+## 程式碼流程說明
+![alt text](image.png)
+
 ## 貢獻者指引
 * email:timothychang.kj@gmail.com
 * [https://linkedin.com/in/timothychang.kj](https://www.linkedin.com/in/timothy-chang-kj/)
