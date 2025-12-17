@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import json
 import pandas as pd
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional
-from __future__ import annotations
+
 
 
 def read_businfo_xml(xml_path: str) -> pd.DataFrame:
