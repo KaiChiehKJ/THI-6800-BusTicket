@@ -2,7 +2,6 @@ import os
 import pandas as pd 
 import geopandas as gpd
 
-
 def create_folder(folder_name):
     """建立資料夾"""
     if not os.path.exists(folder_name):
