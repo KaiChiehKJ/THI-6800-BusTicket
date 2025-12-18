@@ -61,3 +61,24 @@ def read_combined_dataframe(file_list, filepath = True):
     # 合併所有 DataFrame
     combined_df = pd.concat(dataframes, ignore_index=True)
     return combined_df
+
+def filter_by_keywords(df, filtercolumn, filterlist):
+    """
+    從指定欄位中，排除包含 filterlist 關鍵字的資料列
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        原始資料
+    filtercolumn : str
+        要檢查關鍵字的欄位名稱
+    filterlist : list[str]
+        要排除的關鍵字清單
+
+    Returns
+    -------
+    pandas.DataFrame
+        過濾後的 DataFrame
+    """
+    pattern = '|'.join(map(str, filterlist))
+    return df[~df[filtercolumn].str.contains(pattern, na=False)]
