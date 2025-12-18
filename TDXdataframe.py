@@ -4,6 +4,7 @@ import json
 import pandas as pd
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional
+from datetime import datetime, timedelta
 
 def read_businfo_xml(xml_path: str) -> pd.DataFrame:
     ns = {'ptx': 'https://ptx.transportdata.tw/standard/schema/'}
@@ -389,3 +390,10 @@ def read_displayofroute_xml(xml_path: str) -> pd.DataFrame:
         df = df.sort_values(sort_cols, kind="mergesort").reset_index(drop=True)
 
     return df
+
+def updatelog(file, text):
+    """將 text 追加寫入指定的 log 檔案，並加上當前時間"""
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # 取得當前時間
+    log_entry = f"[{timestamp}] {text}"  # 格式化日誌內容
+    with open(file, 'a', encoding='utf-8') as f:
+        f.write(log_entry + '\n')
