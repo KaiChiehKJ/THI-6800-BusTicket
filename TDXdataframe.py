@@ -5,8 +5,6 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional
 
-
-
 def read_businfo_xml(xml_path: str) -> pd.DataFrame:
     ns = {'ptx': 'https://ptx.transportdata.tw/standard/schema/'}
 
