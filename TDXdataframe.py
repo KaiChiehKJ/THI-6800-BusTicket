@@ -311,3 +311,83 @@ def read_bus_shape_of_route_xml(xml_path: str) -> pd.DataFrame:
     df = pd.DataFrame(records)
 
     return df
+
+def read_displayofroute_xml(xml_path: str) -> pd.DataFrame:
+    """
+    讀取 TDX 顯示用路線站序資料（BusDisplayStopOfRoute XML）並轉成 DataFrame
+    欄位對齊 schema：RouteUID, RouteID, RouteName(Zh/En), Direction, Stops(Stop...), UpdateTime, VersionID
+    """
+
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
+
+    # 解析 namespace（TDX XML 常見 root tag 會是 {uri}xxx）
+    if root.tag.startswith("{"):
+        uri = root.tag.split("}")[0].strip("{")
+    else:
+        uri = "https://ptx.transportdata.tw/standard/schema/"
+    ns = {"ns": uri}
+
+    def gettext(elem, path):
+        """安全取值：找不到節點或內容就回 None"""
+        if elem is None:
+            return None
+        node = elem.find(path, ns)
+        return node.text if node is not None else None
+
+    rows = []
+
+    for bdsr in root.findall("ns:BusDisplayStopOfRoute", ns):
+        base = {
+            "RouteUID":     gettext(bdsr, "ns:RouteUID"),
+            "RouteID":      gettext(bdsr, "ns:RouteID"),
+            "RouteName_Zh": gettext(bdsr, "ns:RouteName/ns:Zh_tw"),
+            "RouteName_En": gettext(bdsr, "ns:RouteName/ns:En"),
+            "Direction":    gettext(bdsr, "ns:Direction"),
+            "UpdateTime":   gettext(bdsr, "ns:UpdateTime"),
+            "VersionID":    gettext(bdsr, "ns:VersionID"),
+        }
+
+        for stop in bdsr.findall("ns:Stops/ns:Stop", ns):
+            row = base.copy()
+            row.update({
+                # Stop 基本
+                "StopUID":      gettext(stop, "ns:StopUID"),
+                "StopID":       gettext(stop, "ns:StopID"),
+                "StopName_Zh":  gettext(stop, "ns:StopName/ns:Zh_tw"),
+                "StopName_En":  gettext(stop, "ns:StopName/ns:En"),
+
+                # 上下車/站序
+                "StopBoarding": gettext(stop, "ns:StopBoarding"),
+                "StopSequence": gettext(stop, "ns:StopSequence"),
+
+                # 位置
+                "PositionLon":  gettext(stop, "ns:StopPosition/ns:PositionLon"),
+                "PositionLat":  gettext(stop, "ns:StopPosition/ns:PositionLat"),
+                "GeoHash":      gettext(stop, "ns:StopPosition/ns:GeoHash"),
+
+                # 站位資訊
+                "StationID":        gettext(stop, "ns:StationID"),
+                "StationGroupID":   gettext(stop, "ns:StationGroupID"),
+                "LocationCityCode": gettext(stop, "ns:LocationCityCode"),
+            })
+            rows.append(row)
+
+    df = pd.DataFrame(rows)
+
+    # 轉型（遇到空值就 NaN）
+    int_cols = ["Direction", "StopBoarding", "StopSequence", "VersionID"]
+    for c in int_cols:
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce").astype("Int64")
+
+    for c in ["PositionLon", "PositionLat"]:
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+
+    # 常用排序：路線 + 方向 + 站序
+    sort_cols = [c for c in ["RouteUID", "Direction", "StopSequence"] if c in df.columns]
+    if sort_cols and len(df) > 0:
+        df = df.sort_values(sort_cols, kind="mergesort").reset_index(drop=True)
+
+    return df
