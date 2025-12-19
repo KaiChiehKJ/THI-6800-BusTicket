@@ -3,6 +3,8 @@ import pandas as pd
 import re
 import geopandas as gpd
 from datetime import datetime, timedelta
+from pathlib import Path
+
 
 
 def create_folder(folder_name):
@@ -192,19 +194,33 @@ def transfer_log_to_dataframe(logfilepath):
     df = pd.DataFrame(rows)
     return df
 
-def get_df_log(logfile):
-    import pandas as pd
+def get_df_log(
+    logfile: str,
+    *,
+    sep: str = r"\s*\|\s*",
+    names: list[str] = ["timestamp", "level", "message"],
+    encoding: str = "cp950",
+    time_format: str = "%Y-%m-%d %H:%M:%S,%f"):
+
 
     df = pd.read_csv(
         logfile,
-        sep=r"\s*\|\s*",      # 用 | 當分隔符（前後空白忽略）
+        sep=sep,
         engine="python",
-        names=["timestamp", "level", "message"]
+        names=names,
+        encoding=encoding,
     )
 
-    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    # 只有 timestamp 欄位存在時才轉時間（防呆）
+    if "timestamp" in df.columns:
+        df["timestamp"] = pd.to_datetime(
+            df["timestamp"],
+            format=time_format,
+            errors="coerce"  # 解析失敗 → NaT，不會炸掉
+        )
 
     return df
+
 
 def outputlog(logfile: str):
     df_log = get_df_log(logfile)
