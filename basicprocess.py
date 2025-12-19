@@ -163,7 +163,7 @@ def log_txt_to_dataframe(
 
     return pd.DataFrame(rows)
 
-def updatelog_format(file, level, text):
+def updatelog_format(file, text, level = 'INFO'):
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     log_entry = f"[{timestamp}] [{level}] {text}"
     with open(file, 'a', encoding='utf-8') as f:
