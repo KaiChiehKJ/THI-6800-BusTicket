@@ -205,3 +205,12 @@ def get_df_log(logfile):
     df["timestamp"] = pd.to_datetime(df["timestamp"])
 
     return df
+
+def outputlog(logfile: str):
+    df_log = get_df_log(logfile)
+
+    p = Path(logfile)
+    logfile_excel = str(p.with_suffix(".xlsx"))
+
+    df_log.to_excel(logfile_excel, index=False)
+    return logfile_excel
