@@ -191,3 +191,17 @@ def transfer_log_to_dataframe(logfilepath):
 
     df = pd.DataFrame(rows)
     return df
+
+def get_df_log(logfile):
+    import pandas as pd
+
+    df = pd.read_csv(
+        logfile,
+        sep=r"\s*\|\s*",      # 用 | 當分隔符（前後空白忽略）
+        engine="python",
+        names=["timestamp", "level", "message"]
+    )
+
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+
+    return df
