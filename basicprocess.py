@@ -1,5 +1,6 @@
 import os 
 import pandas as pd 
+import re
 import geopandas as gpd
 from datetime import datetime, timedelta
 
@@ -131,3 +132,34 @@ def refreshlog(file, day=30):
     # 重新寫入檔案
     with open(file, 'w', encoding='utf-8') as f:
         f.writelines(new_lines)
+
+def log_txt_to_dataframe(
+    txt_path: str,
+    log_re=re.compile(
+        r'^\[(?P<ts>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]\s*'
+        r'\[(?P<level>[^\]]+)\]:(?P<msg>.*)$'
+    )) -> pd.DataFrame:
+
+    rows = []
+
+    with open(txt_path, "r", encoding="utf-8") as f:
+        for line_no, line in enumerate(f, start=1):
+            line = line.rstrip("\n")
+
+            if not line.strip():
+                continue
+
+            m = log_re.match(line)
+            if m:
+                rows.append({
+                    "line_no": line_no,
+                    "timestamp": pd.to_datetime(m.group("ts")),
+                    "level": m.group("level").lower(),
+                    "message": m.group("msg").strip()
+                })
+            else:
+                if rows:
+                    rows[-1]["message"] += "\n" + line
+
+    return pd.DataFrame(rows)
+
