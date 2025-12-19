@@ -163,3 +163,31 @@ def log_txt_to_dataframe(
 
     return pd.DataFrame(rows)
 
+def updatelog_format(file, level, text):
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    log_entry = f"[{timestamp}] [{level}] {text}"
+    with open(file, 'a', encoding='utf-8') as f:
+        f.write(log_entry + '\n')
+
+def transfer_log_to_dataframe(logfilepath):
+    """
+    將 log 檔案轉換為 pandas DataFrame
+    log 格式需為：
+    [YYYY-MM-DD HH:MM:SS] [LEVEL] message
+    """
+    pattern = r'\[(.*?)\] \[(.*?)\] (.*)'
+    rows = []
+
+    with open(logfilepath, 'r', encoding='utf-8') as f:
+        for line in f:
+            match = re.match(pattern, line.strip())
+            if match:
+                timestamp, level, message = match.groups()
+                rows.append({
+                    'timestamp': pd.to_datetime(timestamp),
+                    'level': level,
+                    'message': message
+                })
+
+    df = pd.DataFrame(rows)
+    return df
