@@ -21,16 +21,23 @@ project_name <br>
 │   ├── 01_TDXDownload.py <br>
 │   ├── 02_BusShapeSegment.py <br>
 │   ├── 03_SelectSegment.py <br>
-│   ├── 04_BusTicketAnalysis.py <br>
+│   ├── 04_營運月報整李.py # 這個是因為本計畫取得的資料來源及格式不一，所以需要額外整理<br>
+│   ├── 05_BusTicketAnalysis.py <br>
+│   ├── 06_TRAAnalysisCode.py # 同步分析台鐵的票證及月票 (但篩選出特定格事後 可以用tableau處理即可)<br>
 │   ├── TDXdataframe.py <br>
 │   └── basicprocess.py  <br>
 ├── 參考資料/ <br>
-│   ├── 屏柵線 # 提供每個屏柵線的調查點位列表，並且有人工指定出美個點位應該找到的調查方向<br>
+│   ├── 屏柵線.xlsx # 提供每個屏柵線的調查點位列表，並且有人工指定出美個點位應該找到的調查方向<br>
+│   ├── 月報.xlsx # 整理過的閱報統整 <br>
+│   ├── 縣市界.shp <br>
+│   ├── 台鐵車站.shp <br>
+│   ├── 台鐵線形.shp <br>
 │   └── Date.xlsx # 提供非技術人員挑選塞選的票證時間區間 <br>
 ├── 00_TDX資料下載/ <br>
 ├── 01_初步整理票證/ # 因資料量過大需要批次輸出，可改為自行串接資料庫加速處理 <br>
 ├── 02_初步分析/ <br>
 ├── 03_處理後資料/ # tableau的資料都會在這個資料夾之內，不會直接取用原始資料(未進行資料清理) <br>
+├── 04_成果計算/ # 不需要再計算的資料會從這邊索取<br>
 ├── Tableau/ # tableau儀表版納入版控 <br>
 └── README.md  # 項目的說明文件 <br>
 
